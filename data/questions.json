@@ -1,0 +1,325 @@
+{
+    "items": [
+        {
+            "tags": [
+                "python",
+                "iterator",
+                "generator",
+                "yield"
+            ],
+            "owner": {
+                "account_id": 9828,
+                "reputation": 147814,
+                "user_id": 18300,
+                "user_type": "registered",
+                "accept_rate": 92,
+                "profile_image": "https://i.sstatic.net/jcyI4.jpg?s=256",
+                "display_name": "Alex. S.",
+                "link": "https://stackoverflow.com/users/18300/alex-s"
+            },
+            "is_answered": true,
+            "view_count": 3451416,
+            "protected_date": 1360547307,
+            "accepted_answer_id": 231855,
+            "answer_count": 52,
+            "score": 13088,
+            "last_activity_date": 1741436803,
+            "creation_date": 1224800471,
+            "last_edit_date": 1711253482,
+            "question_id": 231767,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/231767/what-does-the-yield-keyword-do-in-python",
+            "title": "What does the &quot;yield&quot; keyword do in Python?",
+            "body": "<p>What functionality does the <a href=\"https://docs.python.org/3/reference/simple_stmts.html#yield\" rel=\"noreferrer\"><code>yield</code></a> keyword in Python provide?</p>\n<p>For example, I'm trying to understand this code<sup><strong>1</strong></sup>:</p>\n<pre><code>def _get_child_candidates(self, distance, min_dist, max_dist):\n    if self._leftchild and distance - max_dist &lt; self._median:\n        yield self._leftchild\n    if self._rightchild and distance + max_dist &gt;= self._median:\n        yield self._rightchild  \n</code></pre>\n<p>And this is the caller:</p>\n<pre><code>result, candidates = [], [self]\nwhile candidates:\n    node = candidates.pop()\n    distance = node._get_dist(obj)\n    if distance &lt;= max_dist and distance &gt;= min_dist:\n        result.extend(node._values)\n    candidates.extend(node._get_child_candidates(distance, min_dist, max_dist))\nreturn result\n</code></pre>\n<p>What happens when the method <code>_get_child_candidates</code> is called?\nIs a list returned? A single element? Is it called again? When will subsequent calls stop?</p>\n\n<hr />\n<sub>\n1. This piece of code was written by Jochen Schulz (jrschulz), who made a great Python library for metric spaces. This is the link to the complete source: <a href=\"https://well-adjusted.de/~jrspieker/mspace/\" rel=\"noreferrer\">Module mspace</a>.</sub> \n"
+        },
+        {
+            "tags": [
+                "python",
+                "namespaces",
+                "program-entry-point",
+                "python-module",
+                "idioms"
+            ],
+            "owner": {
+                "account_id": 21259,
+                "reputation": 184313,
+                "user_id": 51518,
+                "user_type": "registered",
+                "accept_rate": 86,
+                "profile_image": "https://www.gravatar.com/avatar/eb5a95cb1be342c4089183cd8232a7f2?s=256&d=identicon&r=PG",
+                "display_name": "Devoted",
+                "link": "https://stackoverflow.com/users/51518/devoted"
+            },
+            "is_answered": true,
+            "view_count": 4921954,
+            "protected_date": 1365246276,
+            "accepted_answer_id": 419185,
+            "answer_count": 40,
+            "score": 8392,
+            "last_activity_date": 1724383494,
+            "creation_date": 1231301460,
+            "last_edit_date": 1668391615,
+            "question_id": 419163,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/419163/what-does-if-name-main-do",
+            "title": "What does if __name__ == &quot;__main__&quot;: do?",
+            "body": "<p>What does this do, and why should one include the <code>if</code> statement?</p>\n<pre class=\"lang-py prettyprint-override\"><code>if __name__ == &quot;__main__&quot;:\n    print(&quot;Hello, World!&quot;)\n</code></pre>\n<hr />\n<p><sub>If you are trying to close a question where someone should be using this idiom and isn't, consider closing as a duplicate of <a href=\"https://stackoverflow.com/questions/6523791\">Why is Python running my module when I import it, and how do I stop it?</a> instead. For questions where someone simply hasn't called any functions, or incorrectly expects a function named <code>main</code> to be used as an entry point automatically, use <a href=\"https://stackoverflow.com/questions/17257631\">Why doesn&#39;t the main() function run when I start a Python script? Where does the script start running?</a>.</sub></p>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "operators",
+                "conditional-operator"
+            ],
+            "owner": {
+                "account_id": 21259,
+                "reputation": 184313,
+                "user_id": 51518,
+                "user_type": "registered",
+                "accept_rate": 86,
+                "profile_image": "https://www.gravatar.com/avatar/eb5a95cb1be342c4089183cd8232a7f2?s=256&d=identicon&r=PG",
+                "display_name": "Devoted",
+                "link": "https://stackoverflow.com/users/51518/devoted"
+            },
+            "is_answered": true,
+            "view_count": 3085960,
+            "protected_date": 1370841342,
+            "accepted_answer_id": 394814,
+            "answer_count": 32,
+            "score": 8089,
+            "last_activity_date": 1747560370,
+            "creation_date": 1230366738,
+            "last_edit_date": 1654483962,
+            "question_id": 394809,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/394809/does-python-have-a-ternary-conditional-operator",
+            "title": "Does Python have a ternary conditional operator?",
+            "body": "<p>Is there a <a href=\"https://en.wikipedia.org/wiki/%3F:#Python\" rel=\"noreferrer\">ternary conditional operator</a> in Python?</p>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "oop",
+                "metaclass",
+                "python-class",
+                "python-datamodel"
+            ],
+            "owner": {
+                "account_id": 6018,
+                "reputation": 599201,
+                "user_id": 9951,
+                "user_type": "registered",
+                "accept_rate": 78,
+                "profile_image": "https://i.sstatic.net/CIFG8.png?s=256",
+                "display_name": "Bite code",
+                "link": "https://stackoverflow.com/users/9951/bite-code"
+            },
+            "is_answered": true,
+            "view_count": 1238320,
+            "protected_date": 1350585760,
+            "accepted_answer_id": 100146,
+            "answer_count": 26,
+            "score": 7504,
+            "last_activity_date": 1748620333,
+            "creation_date": 1221804646,
+            "last_edit_date": 1675831759,
+            "question_id": 100003,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/100003/what-are-metaclasses-in-python",
+            "title": "What are metaclasses in Python?",
+            "body": "<p>What are <a href=\"https://docs.python.org/3/reference/datamodel.html#metaclasses\" rel=\"noreferrer\">metaclasses</a>? What are they used for?</p>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "file",
+                "file-exists"
+            ],
+            "owner": {
+                "account_id": 8617,
+                "reputation": 80411,
+                "user_id": 15616,
+                "user_type": "registered",
+                "accept_rate": 83,
+                "profile_image": "https://www.gravatar.com/avatar/1d502f7932af0a41d8ff6ab5d9cf3406?s=256&d=identicon&r=PG",
+                "display_name": "spence91",
+                "link": "https://stackoverflow.com/users/15616/spence91"
+            },
+            "is_answered": true,
+            "view_count": 5959001,
+            "protected_date": 1370841219,
+            "answer_count": 41,
+            "score": 7305,
+            "last_activity_date": 1730427992,
+            "creation_date": 1221656100,
+            "last_edit_date": 1616874145,
+            "question_id": 82831,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/82831/how-do-i-check-whether-a-file-exists-without-exceptions",
+            "title": "How do I check whether a file exists without exceptions?",
+            "body": "<p>How do I check whether a file exists or not, without using the <a href=\"https://docs.python.org/3.6/reference/compound_stmts.html#try\" rel=\"noreferrer\"><code>try</code></a> statement?</p>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "dictionary",
+                "merge"
+            ],
+            "owner": {
+                "account_id": 2310,
+                "reputation": 127101,
+                "user_id": 3207,
+                "user_type": "registered",
+                "accept_rate": 100,
+                "profile_image": "https://www.gravatar.com/avatar/b1f36e554be0e1ae19f9a74d6ece9107?s=256&d=identicon&r=PG",
+                "display_name": "Carl Meyer",
+                "link": "https://stackoverflow.com/users/3207/carl-meyer"
+            },
+            "is_answered": true,
+            "view_count": 3598146,
+            "protected_date": 1392127410,
+            "accepted_answer_id": 61116810,
+            "answer_count": 45,
+            "score": 7098,
+            "last_activity_date": 1743860439,
+            "creation_date": 1220341470,
+            "last_edit_date": 1676185398,
+            "question_id": 38987,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/38987/how-do-i-merge-two-dictionaries-in-a-single-expression-in-python",
+            "title": "How do I merge two dictionaries in a single expression in Python?",
+            "body": "<p>I want to merge two dictionaries into a new dictionary.</p>\n<pre><code>x = {'a': 1, 'b': 2}\ny = {'b': 3, 'c': 4}\nz = merge(x, y)\n\n&gt;&gt;&gt; z\n{'a': 1, 'b': 3, 'c': 4}\n</code></pre>\n<p>Whenever a key <code>k</code> is present in both dictionaries, only the value <code>y[k]</code> should be kept.</p>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "shell",
+                "terminal",
+                "subprocess",
+                "command"
+            ],
+            "owner": {
+                "account_id": 9288,
+                "reputation": 64469,
+                "user_id": 17085,
+                "user_type": "registered",
+                "accept_rate": 89,
+                "profile_image": "https://www.gravatar.com/avatar/d386a6f2f3dda7bcf7f1e11c2171946b?s=256&d=identicon&r=PG",
+                "display_name": "freshWoWer",
+                "link": "https://stackoverflow.com/users/17085/freshwower"
+            },
+            "is_answered": true,
+            "view_count": 5124293,
+            "protected_date": 1366143800,
+            "accepted_answer_id": 89243,
+            "answer_count": 66,
+            "score": 6263,
+            "last_activity_date": 1703656296,
+            "creation_date": 1221701730,
+            "last_edit_date": 1671066365,
+            "question_id": 89228,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/89228/how-do-i-execute-a-program-or-call-a-system-command",
+            "title": "How do I execute a program or call a system command?",
+            "body": "<p>How do I call an external command within Python as if I had typed it in a shell or command prompt?</p>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "exception",
+                "path",
+                "directory",
+                "operating-system"
+            ],
+            "owner": {
+                "account_id": 7495,
+                "reputation": 106630,
+                "user_id": 13055,
+                "user_type": "registered",
+                "accept_rate": 68,
+                "profile_image": "https://www.gravatar.com/avatar/ab82fd8b5ffe4d09c2bb5f9c14d34b09?s=256&d=identicon&r=PG",
+                "display_name": "Parand",
+                "link": "https://stackoverflow.com/users/13055/parand"
+            },
+            "is_answered": true,
+            "view_count": 3979855,
+            "protected_date": 1392127892,
+            "accepted_answer_id": 273227,
+            "answer_count": 28,
+            "score": 5795,
+            "last_activity_date": 1751618433,
+            "creation_date": 1226084205,
+            "last_edit_date": 1682319558,
+            "question_id": 273192,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/273192/how-do-i-create-a-directory-and-any-missing-parent-directories",
+            "title": "How do I create a directory, and any missing parent directories?",
+            "body": "<p>How do I create a directory at a given path, and also create any missing parent directories along that path? For example, the Bash command <code>mkdir -p /path/to/nested/directory</code> does this.</p>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "loops",
+                "list"
+            ],
+            "owner": {
+                "account_id": 21350,
+                "reputation": 332771,
+                "user_id": 51816,
+                "user_type": "registered",
+                "accept_rate": 82,
+                "profile_image": "https://www.gravatar.com/avatar/0e54bb28182bcd9df39704751306df27?s=256&d=identicon&r=PG",
+                "display_name": "Joan Venge",
+                "link": "https://stackoverflow.com/users/51816/joan-venge"
+            },
+            "is_answered": true,
+            "view_count": 4917806,
+            "protected_date": 1458291839,
+            "accepted_answer_id": 522578,
+            "answer_count": 28,
+            "score": 5639,
+            "last_activity_date": 1750779640,
+            "creation_date": 1233960474,
+            "last_edit_date": 1744140192,
+            "question_id": 522563,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/522563/how-can-i-access-the-index-value-in-a-for-loop",
+            "title": "How can I access the index value in a &#39;for&#39; loop?",
+            "body": "<p>How do I access the index while iterating over a sequence with a <code>for</code> loop?</p>\n<pre class=\"lang-py prettyprint-override\"><code>xs = [8, 23, 45]\n\nfor x in xs:\n    print(&quot;item #{} = {}&quot;.format(index, x))\n</code></pre>\n<p>Desired output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>item #1 = 8\nitem #2 = 23\nitem #3 = 45\n</code></pre>\n"
+        },
+        {
+            "tags": [
+                "python",
+                "list",
+                "multidimensional-array",
+                "flatten"
+            ],
+            "owner": {
+                "account_id": 38503,
+                "reputation": 55581,
+                "user_id": 110527,
+                "user_type": "registered",
+                "profile_image": "https://www.gravatar.com/avatar/1a3fec384503a3e0b33361f146006598?s=256&d=identicon&r=PG",
+                "display_name": "Emma",
+                "link": "https://stackoverflow.com/users/110527/emma"
+            },
+            "is_answered": true,
+            "view_count": 4604532,
+            "protected_date": 1357910574,
+            "accepted_answer_id": 952952,
+            "answer_count": 34,
+            "score": 5475,
+            "last_activity_date": 1749805923,
+            "creation_date": 1244147405,
+            "last_edit_date": 1749805923,
+            "question_id": 952914,
+            "content_license": "CC BY-SA 4.0",
+            "link": "https://stackoverflow.com/questions/952914/how-do-i-make-a-flat-list-out-of-a-list-of-lists",
+            "title": "How do I make a flat list out of a list of lists?",
+            "body": "<p>I have a list of lists like</p>\n<pre><code>[\n    [1, 2, 3],\n    [4, 5, 6],\n    [7],\n    [8, 9]\n]\n</code></pre>\n<p>How can I flatten it to get <code>[1, 2, 3, 4, 5, 6, 7, 8, 9]</code>?</p>\n<hr />\n<p><sub>If your list of lists comes from a nested list comprehension, the problem can be solved more simply/directly by fixing the comprehension; please see <a href=\"https://stackoverflow.com/questions/1077015\">How can I get a flat result from a list comprehension instead of a nested list?</a>.</sub></p>\n<p><sub>The most popular solutions here generally only flatten one &quot;level&quot; of the nested list. See <a href=\"https://stackoverflow.com/questions/2158395\">Flatten an irregular (arbitrarily nested) list of lists</a> for solutions that completely flatten a deeply nested structure (recursively, in general).</sub></p>\n"
+        }
+    ],
+    "has_more": true,
+    "quota_max": 300,
+    "quota_remaining": 299
+}
