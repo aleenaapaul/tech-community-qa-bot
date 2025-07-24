@@ -10,13 +10,11 @@ def truncate_text(text, max_tokens=MAX_TOKENS):
     return " ".join(text.split()[:max_tokens])
 
 # -----------------------------
-# Load Summarization Model
+# Load Summarization Models
 # -----------------------------
 @st.cache_resource
-def load_summarizer():
-    return pipeline("summarization", model="sshleifer/distilbart-cnn-12-6")
-
-summarizer = load_summarizer()
+def load_summarizer(model_name):
+    return pipeline("summarization", model=model_name)
 
 # -----------------------------
 # Sidebar Configuration
@@ -27,10 +25,17 @@ view_mode = st.sidebar.radio("Select View Mode", ["Ask Question", "Browse Datase
 selected_tag = st.sidebar.selectbox("Filter Questions by Tag", ["python", "javascript", "flask", "django", "c++", "java"])
 num_results = st.sidebar.slider("Top N Matches to Compare", 3, 20, 10)
 summary_threshold = st.sidebar.slider("Minimum Words Before Summarizing", 60, 300, 80)
-show_debug = st.sidebar.checkbox("🔧 Show Debug Info", value=False)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("Model: `all-MiniLM-L6-v2`")
+
+llm_choice = st.sidebar.selectbox("Choose LLM for Summarization", [
+    "sshleifer/distilbart-cnn-12-6",
+    "google/flan-t5-base",
+    "facebook/bart-large-cnn"
+])
+
+summarizer = load_summarizer(llm_choice)
 
 # -----------------------------
 # Load Model + Filtered Data
@@ -71,34 +76,32 @@ if view_mode == "Ask Question":
 
             agent_decision_log = []
 
-            try:
-                best_idx = top_results[1][0].item()
-                best_match = df.iloc[best_idx]
-                raw_answer = best_match['answer'] if pd.notnull(best_match['answer']) else ""
+            best_match = None
+            raw_answer = ""
+            for idx in top_results[1]:
+                match = df.iloc[idx.item()]
+                answer = match.get('answer', '')
+                if isinstance(answer, str) and len(answer.strip().split()) > 3:
+                    best_match = match
+                    raw_answer = answer
+                    break
 
-                if show_debug:
-                    st.code(raw_answer[:500], language="text")
-
-                if raw_answer and len(raw_answer.split()) > 10:
-                    agent_decision_log.append("✅ Valid answer found.")
-                    if len(raw_answer.split()) > summary_threshold:
-                        agent_decision_log.append("📉 Long answer, summarizing.")
-                        truncated = truncate_text(raw_answer)
-                        try:
-                            summary_output = summarizer(truncated, max_length=512, min_length=80, do_sample=False)
-                            summary = summary_output[0]['summary_text'] if summary_output else "⚠️ Could not summarize this answer."
-                        except Exception as e:
-                            summary = "⚠️ Could not summarize this answer. Try a different one."
-                            agent_decision_log.append(f"❌ Summarization failed: {str(e)}")
-                            if show_debug:
-                                st.error(f"Summarization Exception: {e}")
-                    else:
-                        summary = raw_answer
+            if best_match is None:
+                agent_decision_log.append("❌ No valid answer found in top results.")
+                st.warning("None of the top matches have usable answers. Try changing the tag or your question.")
+            else:
+                agent_decision_log.append("✅ Valid answer found.")
+                if len(raw_answer.split()) > summary_threshold:
+                    agent_decision_log.append("📉 Long answer, summarizing with " + llm_choice)
+                    truncated = truncate_text(raw_answer)
+                    try:
+                        summary = summarizer(truncated, max_length=512, min_length=80, do_sample=False)[0]['summary_text']
+                    except Exception as e:
+                        agent_decision_log.append(f"❌ Summarization failed: {e}")
+                        summary = "⚠️ Could not summarize this answer. Try a different one."
                 else:
-                    agent_decision_log.append("⚠️ No valid answer. Check other suggestions.")
-                    summary = "No valid answer found. Try rephrasing or exploring other matches."
+                    summary = raw_answer
 
-                # Display
                 st.success("✅ Best Match Found")
                 st.markdown(f"### 🔹 {best_match['title']}")
                 st.markdown(f"**Score:** {best_match['score']}")
@@ -106,20 +109,17 @@ if view_mode == "Ask Question":
                 st.markdown("**Answer Summary:**")
                 st.info(summary)
 
-                with st.expander(f"🔎 Show Other Top {num_results - 1} Matches"):
-                    for idx in top_results[1][1:]:
-                        match = df.iloc[idx.item()]
-                        st.markdown(f"#### 🔸 {match['title']}")
-                        st.markdown(f"**Score:** {match['score']}")
-                        st.markdown(f"[🔗 View on Stack Overflow]({match['link']})")
-                        st.markdown("---")
+            with st.expander(f"🔎 Show Other Top {num_results - 1} Matches"):
+                for idx in top_results[1]:
+                    match = df.iloc[idx.item()]
+                    st.markdown(f"#### 🔸 {match['title']}")
+                    st.markdown(f"**Score:** {match['score']}")
+                    st.markdown(f"[🔗 View on Stack Overflow]({match['link']})")
+                    st.markdown("---")
 
-                with st.expander("🧠 Agent Reasoning Trace"):
-                    for step in agent_decision_log:
-                        st.markdown(f"- {step}")
-
-            except IndexError:
-                st.warning("⚠️ Could not retrieve results. Please try a different question.")
+            with st.expander("🧠 Agent Reasoning Trace"):
+                for step in agent_decision_log:
+                    st.markdown(f"- {step}")
 
 # -----------------------------
 # View Dataset Mode
