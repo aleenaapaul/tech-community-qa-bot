@@ -3,6 +3,7 @@ import pandas as pd
 from sentence_transformers import SentenceTransformer, util
 from transformers import pipeline
 import torch
+import datetime
 
 MAX_TOKENS = 1024  # BART input limit
 
@@ -21,7 +22,7 @@ def load_summarizer(model_name):
 # -----------------------------
 st.sidebar.title("⚙️ Configuration")
 
-view_mode = st.sidebar.radio("Select View Mode", ["Ask Question", "Browse Dataset"])
+view_mode = st.sidebar.radio("Select View Mode", ["Ask Question", "Browse Dataset", "VectorDB Insights"])
 selected_tag = st.sidebar.selectbox("Filter Questions by Tag", ["python", "javascript", "flask", "django", "c++", "java"])
 num_results = st.sidebar.slider("Top N Matches to Compare", 3, 20, 10)
 summary_threshold = st.sidebar.slider("Minimum Words Before Summarizing", 60, 300, 80)
@@ -29,13 +30,26 @@ summary_threshold = st.sidebar.slider("Minimum Words Before Summarizing", 60, 30
 st.sidebar.markdown("---")
 st.sidebar.markdown("Model: `all-MiniLM-L6-v2`")
 
-llm_choice = st.sidebar.selectbox("Choose LLM for Summarization", [
-    "sshleifer/distilbart-cnn-12-6",
-    "google/flan-t5-base",
-    "facebook/bart-large-cnn"
-])
+llm_display_names = {
+    "DistilBART": "sshleifer/distilbart-cnn-12-6",
+    "FLAN-T5": "google/flan-t5-base",
+    "BART-Large": "facebook/bart-large-cnn"
+}
+
+llm_name_selected = st.sidebar.selectbox("Choose LLM for Summarization", list(llm_display_names.keys()))
+llm_choice = llm_display_names[llm_name_selected]
 
 summarizer = load_summarizer(llm_choice)
+
+with st.sidebar.expander("📜 Search History"):
+    if st.session_state.get("search_history"):
+        for item in reversed(st.session_state["search_history"][-5:]):  # Show last 5
+            st.markdown(f"**🕒 {item['timestamp']}**")
+            st.markdown(f"🔍 *{item['question']}*")
+            st.markdown(f"🔗 [{item['matched_title']}]({item['link']})")
+            st.markdown("---")
+    else:
+        st.markdown("No searches yet.")
 
 # -----------------------------
 # Load Model + Filtered Data
@@ -92,7 +106,7 @@ if view_mode == "Ask Question":
             else:
                 agent_decision_log.append("✅ Valid answer found.")
                 if len(raw_answer.split()) > summary_threshold:
-                    agent_decision_log.append("📉 Long answer, summarizing with " + llm_choice)
+                    agent_decision_log.append(f"📉 Long answer, summarizing with {llm_name_selected}")
                     truncated = truncate_text(raw_answer)
                     try:
                         summary = summarizer(truncated, max_length=512, min_length=80, do_sample=False)[0]['summary_text']
@@ -109,6 +123,17 @@ if view_mode == "Ask Question":
                 st.markdown("**Answer Summary:**")
                 st.info(summary)
 
+                # ✅ FIXED: Save search to session state properly
+                if "search_history" not in st.session_state:
+                    st.session_state["search_history"] = []
+
+                st.session_state["search_history"].append({
+                    "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "question": user_question,
+                    "matched_title": best_match['title'],
+                    "link": best_match['link']
+                })
+
             with st.expander(f"🔎 Show Other Top {num_results - 1} Matches"):
                 for idx in top_results[1]:
                     match = df.iloc[idx.item()]
@@ -117,7 +142,7 @@ if view_mode == "Ask Question":
                     st.markdown(f"[🔗 View on Stack Overflow]({match['link']})")
                     st.markdown("---")
 
-            with st.expander("🧠 Agent Reasoning Trace"):
+            with st.expander("🧐 Agent Reasoning Trace"):
                 for step in agent_decision_log:
                     st.markdown(f"- {step}")
 
@@ -128,3 +153,35 @@ elif view_mode == "Browse Dataset":
     st.title("📚 QA Dataset Viewer")
     st.markdown("View the filtered Stack Overflow questions available to the bot:")
     st.dataframe(df[["title", "score", "link"]], use_container_width=True)
+
+# -----------------------------
+# VectorDB Insights Mode
+# -----------------------------
+elif view_mode == "VectorDB Insights":
+    st.title("🧐 VectorDB Insights")
+    st.markdown("Explore vector embeddings and similarity scores used in the QA Bot.")
+
+    st.markdown("### 📌 Loaded Tags:")
+    st.code(selected_tag)
+
+    st.markdown("### 🔹 Number of Questions Loaded:")
+    st.code(len(df))
+
+    st.markdown("### 🔍 View Vector Embeddings")
+    with st.expander("📊 View Embedding Vector for First 5 Questions"):
+        for idx in range(min(5, len(df))):
+            st.markdown(f"**Q{idx+1}:** {df.iloc[idx]['title']}")
+            st.code(question_embeddings[idx].tolist(), language='json')
+
+    st.markdown("### 📈 Test a Similarity Query")
+    test_question = st.text_input("🔍 Enter a sample question to test similarity:")
+    if test_question:
+        test_embedding = model.encode(test_question, convert_to_tensor=True)
+        similarity_scores = util.pytorch_cos_sim(test_embedding, question_embeddings)[0]
+
+        top_k = similarity_scores.topk(5)
+        st.markdown("#### 🔝 Top 5 Matches by Cosine Similarity:")
+        for i, idx in enumerate(top_k[1]):
+            score = top_k[0][i].item()
+            title = df.iloc[idx.item()]['title']
+            st.markdown(f"**{i+1}.** `{score:.4f}` → {title}")
