@@ -4,8 +4,8 @@ import csv
 
 # --- CONFIG ---
 SITE = "stackoverflow"
-TAGS = ["python"]  # Change/add more tags if needed
-PAGES = 25  # Max allowed without API key (25 × 20 = 500 questions)
+TAGS = ["python"]  # Add more tags if needed
+PAGES = 50  # 20 questions per page × 50 = 1000 questions
 OUTPUT_FILE = "data/stack_overflow_1000_questions.csv"
 
 # --- FETCH FUNCTION ---
@@ -13,7 +13,7 @@ def fetch_questions():
     all_data = []
     for page in range(1, PAGES + 1):
         print(f"Fetching page {page}...")
-        url = f"https://api.stackexchange.com/2.3/questions?page={page}&pagesize=20&order=desc&sort=votes&tagged={'%3B'.join(TAGS)}&site={SITE}&filter=!)rTkraJr7YdK)3sFV87H"
+        url = f"https://api.stackexchange.com/2.3/questions?page={page}&pagesize=20&order=desc&sort=votes&tagged={'%3B'.join(TAGS)}&site={SITE}&filter=withbody"
         res = requests.get(url)
         if res.status_code != 200:
             print(f"Error {res.status_code}: {res.text}")
@@ -42,7 +42,7 @@ def fetch_accepted_answers(qdata):
         url = f"https://api.stackexchange.com/2.3/answers/{aid}?order=desc&sort=activity&site={SITE}&filter=withbody"
         res = requests.get(url)
         if res.status_code != 200:
-            print(f"Answer fetch failed: {aid}")
+            print(f"Answer fetch failed for ID {aid}: {res.text}")
             q["answer"] = ""
         else:
             items = res.json().get("items", [])
@@ -51,6 +51,9 @@ def fetch_accepted_answers(qdata):
 
 # --- SAVE TO CSV ---
 def save_to_csv(qdata):
+    if not qdata:
+        print("⚠️ No data to save.")
+        return
     keys = ["title", "link", "score", "tags", "answer"]
     with open(OUTPUT_FILE, mode="w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=keys)
@@ -58,10 +61,13 @@ def save_to_csv(qdata):
         for q in qdata:
             row = {k: q[k] for k in keys}
             writer.writerow(row)
-    print(f"✅ Saved to {OUTPUT_FILE}")
+    print(f"✅ Saved {len(qdata)} entries to {OUTPUT_FILE}")
 
 # --- MAIN ---
 if __name__ == "__main__":
     questions = fetch_questions()
-    fetch_accepted_answers(questions)
-    save_to_csv(questions)
+    if questions:
+        fetch_accepted_answers(questions)
+        save_to_csv(questions)
+    else:
+        print("❌ No questions fetched. Aborting.")

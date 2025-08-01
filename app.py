@@ -24,7 +24,6 @@ st.sidebar.title("⚙️ Configuration")
 
 view_mode = st.sidebar.radio("Select View Mode", ["Ask Question", "Browse Dataset", "VectorDB Insights"])
 selected_tag = st.sidebar.selectbox("Filter Questions by Tag", ["python", "javascript", "flask", "django", "c++", "java"])
-num_results = st.sidebar.slider("Top N Matches to Compare", 3, 20, 10)
 summary_threshold = st.sidebar.slider("Minimum Words Before Summarizing", 60, 300, 80)
 
 st.sidebar.markdown("---")
@@ -81,12 +80,11 @@ if view_mode == "Ask Question":
     st.markdown("Ask a coding question and get the closest Stack Overflow matches + summaries!")
 
     user_question = st.text_input("🔍 Your Question")
-
     if user_question:
         with st.spinner("Searching best matches..."):
             user_embedding = model.encode(user_question, convert_to_tensor=True)
             cos_scores = util.pytorch_cos_sim(user_embedding, question_embeddings)[0]
-            top_results = cos_scores.topk(num_results)
+            top_results = cos_scores.topk(10)
 
             agent_decision_log = []
 
@@ -123,7 +121,6 @@ if view_mode == "Ask Question":
                 st.markdown("**Answer Summary:**")
                 st.info(summary)
 
-                # ✅ FIXED: Save search to session state properly
                 if "search_history" not in st.session_state:
                     st.session_state["search_history"] = []
 
@@ -133,18 +130,6 @@ if view_mode == "Ask Question":
                     "matched_title": best_match['title'],
                     "link": best_match['link']
                 })
-
-            with st.expander(f"🔎 Show Other Top {num_results - 1} Matches"):
-                for idx in top_results[1]:
-                    match = df.iloc[idx.item()]
-                    st.markdown(f"#### 🔸 {match['title']}")
-                    st.markdown(f"**Score:** {match['score']}")
-                    st.markdown(f"[🔗 View on Stack Overflow]({match['link']})")
-                    st.markdown("---")
-
-            with st.expander("🧐 Agent Reasoning Trace"):
-                for step in agent_decision_log:
-                    st.markdown(f"- {step}")
 
 # -----------------------------
 # View Dataset Mode
